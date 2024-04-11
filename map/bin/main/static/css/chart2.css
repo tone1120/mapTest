@@ -1,0 +1,65 @@
+@charset "UTF-8";
+
+/*
+	차트 파트
+*/
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+#chartdiv {
+    width: 300px;
+    height: 350px;
+
+}
+
+/*
+	모달 팝업 파트
+*/
+
+.modal {
+    /*모달*/
+    display: none;
+    /*평소에는 보이지 않도록*/
+    position: absolute;
+    /*부모요소와 관계없이 뷰포트를 기준*/
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    overflow: hidden;
+    background: rgba(85, 59, 228, 0.1);
+    /*z-index 속성은 요소의 쌓임 순서를 정의. 숫자가 큰 값이 더 위에 올라가게 됩니다.*/
+    z-index: 9999;
+}
+
+.modal_content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    height: 80%;
+}
+
+.popup {
+    display: block;
+    border: 1px solid black;
+    width: 40%;
+}
+
+.modal .close_btn {
+	right: 0%;
+    display: block;
+    padding: 10px 20px;
+    background-color: rgb(116, 0, 0);
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}

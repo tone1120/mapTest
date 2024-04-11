@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link rel="stylesheet" th:href="@{/css/chart2.css}">
+	<script src="//cdn.amcharts.com/lib/5/index.js"></script>
+	<script src="//cdn.amcharts.com/lib/5/xy.js"></script>
+	<script src="//cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+	<script defer th:src="@{/script/chart2.js}"></script>
+	<script th:src="@{/script/jquery-3.7.1.min.js}"></script>
+
+
+</head>
+
+<body>
+	
+	
+<!--모달 팝업-->
+<div class="modal">
+    <div class="modal_popup">
+        <h3>모달 팝업 타이틀 입니다!</h3>
+        <div id="chartdiv"></div>
+	<input type="text" id="portCd">
+	<input id="portSearch" type="submit" value="검색">
+	<button type="button" class="close_btn">닫기</button>
+    </div>
+</div>
+<!--end 모달 팝업-->
+<main>
+    <section>
+        <h2>모달 팝업</h2>
+        <button type="button" class="modal_btn">모달팝업</button>
+    </section>
+</main>
+</body>
+
+</html>

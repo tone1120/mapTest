@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+
+<head>
+  <title>Simple Markers</title>
+  <link rel="stylesheet" th:href="@{/css/chart2.css}">
+  <script src="//cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="//cdn.amcharts.com/lib/5/xy.js"></script>
+  <script src="//cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+
+  <style type="text/css">
+    /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+    #map {
+      height: 100%;
+    }
+
+    /* Optional: Makes the sample page fill the window. */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <script th:src="@{/script/jquery-3.7.1.min.js}"></script>
+  <script defer th:src="@{/script/chart2.js}"></script>
+  <!-- <script defer th:inline="javascript" th:src="@{/script/map.js}"></script> -->
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCup0qVTnfr2x9IVuGjV1T95niuiMV4e9k&callback=initMap">
+      (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+        key: "AIzaSyCup0qVTnfr2x9IVuGjV1T95niuiMV4e9k",
+        // Add other bootstrap parameters as needed, using camel case.
+        // Use the 'v' parameter to indicate the version to load (alpha, beta, weekly, etc.)
+      });
+    </script>
+  <script>
+    "use strict";
+
+
+
+    async function initMap() {
+
+      var ports = [ // 각각 마커가 표시될 좌표와 항구이름
+        ['인천항', 37.45950698852539, 126.6256103515625, 'KRINC']
+        , ['부산항', 35.10362243652344, 129.04232788085938, 'KRPUS']
+        , ['홍콩항', 22.3453, 114.1372, 'HKHKG']
+        , ['상하이항', 30.626389, 122.064722, 'CNSHA']
+        , ['도쿄항', 35.616944, 139.795556, 'JPTYO']
+        , ['오사카항', 34.641944, 135.422778, 'JPOSA']
+        , ['싱가포르항', 1.264, 103.84, 'SGSIN']
+      ];
+
+      const focus_map = { // 페이지 출력 시 포커스되는 좌표 위치
+        lat: 25.0671234,
+        lng: 126.6256103515625
+      };
+
+      const { Map } = await google.maps.importLibrary("maps");
+      const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+      const { SearchBox } = await google.maps.importLibrary("places");
+
+      const { InfoWindow } = await google.maps.importLibrary("maps");
+
+
+      // 검색창을 생성합니다.
+      var input = document.createElement('input');
+      input.setAttribute('type', 'text');
+      input.setAttribute('placeholder', '장소를 검색하세요');
+      input.style.marginTop = '10px';
+      input.style.width = '300px';
+
+
+      var map = new Map(document.getElementById("map"), { // 좌표로 포커스를 맞춘다 
+        zoom: 4,
+        center: focus_map,
+        mapId: "DEMO_MAP_ID",	// 없으면 지도 로드를 못하고 유효한 지도 ID 없이 초기화되어 지도에서 고급 마커를 사용할 수 없음 
+        disableDefaultUI: true   // Ui 숨기기  
+      });
+
+      // 구글맵 상단에 검색창을 표시
+      map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+
+      // 검색창을 사용할 때마다 발생하는 이벤트를 처리합니다
+      var searchBox = new google.maps.places.SearchBox(input);
+
+      var infoWindows = ports.map(port => { // 각 마커에 대한 infoWindow 생성
+        return new InfoWindow({
+          content: port[0] // 항구명
+        });
+      });
+
+      /*
+      지도 상에서 마커를 표시 
+       */
+      ports.forEach((port, index) => {
+        var lat = port[1]; // 위도 : 1증가 위로 이동, 1 하락 시 아래로 이동
+        var lng = port[2]; // 경도 : 1증가 오른쪽으로 이동, 1 하락 시 왼쪽으로 이동
+
+        var focus_lng = lng + 5; // 경도 값이 변하는 것 확인 //
+
+        var click_focus_map = { // 항구 클릭 시 포커스되는 좌표 위치
+          lat: lat,
+          lng: focus_lng
+        };
+
+        var marker = new AdvancedMarkerElement({ // 각 항구마다 표시되는 마크
+          position: { lat: lat, lng: lng },
+          map: map,
+          title: port[0]
+        });
+
+        marker.addListener("click", () => { // 클릭 시 해당 마커 옆으로 줌
+          map.setZoom(7);
+          map.setCenter(click_focus_map);
+
+          // 해당 마커에 대한 infoWindow를 엽니다.
+          infoWindows[index].open(map, marker); // open([options, anchor]) - options:  InfoWindow를 렌더링할 지도, anchor: InfoWindow가 배치될 앵커
+
+
+          let searchPort;
+          let vesselCnt;
+		
+          // 구글 맵의 마커가 클릭 시 해당 항구의 port 선박 수용량 차트를 가져옴
+          $.ajax({
+            url: "/study/chart/chartSearch",
+            method: "GET",
+            data: { "portCd": port[3] }
+            , success: function (resp) {
+              searchPort = resp[0].portCd;
+              vesselCnt = resp[0].vesselCnt;
+
+              // root과 chart 만들기
+              var root = am5.Root.new("chartdiv");
+
+              root.setThemes([
+                am5themes_Animated.new(root)
+              ]);
+
+              var chart = root.container.children.push(
+                am5xy.XYChart.new(root, {
+                  panY: false,
+                  layout: root.verticalLayout
+                })
+              );
+
+              // 데이터 정의
+
+              let port = searchPort;
+              let congestion = vesselCnt;
+
+              var data = [{
+                category: port,
+                value: congestion
+              }];
+              // y축 생성
+              let yAxis = chart.yAxes.push(
+                am5xy.ValueAxis.new(root, {
+                  renderer: am5xy.AxisRendererY.new(root, {})
+                })
+              );
+
+              // x축 생성
+              let xAxis = chart.xAxes.push(
+                am5xy.CategoryAxis.new(root, {
+                  maxDeviation: 0.2,
+                  renderer: am5xy.AxisRendererX.new(root, {}),
+                  categoryField: "category"
+                })
+              );
+              xAxis.data.setAll(data);
+
+              // 시리즈 생성
+              var series = chart.series.push(
+                am5xy.ColumnSeries.new(root, {
+                  name: "평균 선박 수용량",
+                  xAxis: xAxis,
+                  yAxis: yAxis,
+                  valueYField: "value",
+                  categoryXField: "category",
+                  tootip: am5.Tooltip.new(root, {})
+                })
+              );
+              series.data.setAll(data);
+
+              // 막대 바 넓이 조정
+              series.columns.template.setAll({
+                width: 35
+              });
+
+              // legend 추가
+              var legend = chart.children.push(am5.Legend.new(root, {}));
+              legend.data.setAll(chart.series.values);
+            }
+          })
+
+        });
+      });
+
+
+    }
+  </script>
+
+</head>
+
+<body>
+  <div id="map"></div>
+  <p id="chartdiv"></p>
+  <!--<input type="text" id="portCd">
+   <input id="portSearch" type="submit" value="검색"> -->
+</body>
+
+</html>

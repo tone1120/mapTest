@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html  lang="ko" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" th:href="@{/css/chart.css}">
+<script src="//cdn.amcharts.com/lib/5/index.js"></script>
+<script src="//cdn.amcharts.com/lib/5/xy.js"></script>
+<script src="//cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+</head>
+<body>
+<div id="chartdiv"></div>
+
+<script>
+//Create root and chart
+var root = am5.Root.new("chartdiv"); 
+
+root.setThemes([
+  am5themes_Animated.new(root)
+]);
+
+var chart = root.container.children.push( 
+  am5xy.XYChart.new(root, {
+    panY: false,
+    layout: root.verticalLayout,
+    maxTooltipDistance: 0
+  }) 
+);
+
+// Define data
+var data = [{
+  date: new Date(2021, 0, 1).getTime(),
+  value: 1,
+  value2: 2.5
+}, {
+  date: new Date(2021, 0, 2).getTime(),
+  value: 3,
+  value2: 2.1
+}, {
+  date: new Date(2021, 0, 3).getTime(),
+  value: 2,
+  value2: 3
+}, {
+  date: new Date(2021, 0, 4).getTime(),
+  value: 1,
+  value2: 2
+}, {
+  date: new Date(2021, 0, 5).getTime(),
+  value: 1.5,
+  value2: 0.5
+}];
+
+// Create Y-axis
+var yAxis = chart.yAxes.push(
+  am5xy.ValueAxis.new(root, {
+    extraTooltipPrecision: 1,
+    //baseValue: 2,
+    renderer: am5xy.AxisRendererY.new(root, {})
+  })
+);
+
+// Create X-Axis
+var xAxis = chart.xAxes.push(
+  am5xy.DateAxis.new(root, {
+    baseInterval: { timeUnit: "day", count: 1 },
+    renderer: am5xy.AxisRendererX.new(root, {
+      minGridDistance: 20
+    }),
+  })
+);
+
+// Create series
+function createSeries(name, field) {
+  var series = chart.series.push( 
+    am5xy.ColumnSeries.new(root, { 
+      name: name,
+      xAxis: xAxis, 
+      yAxis: yAxis, 
+      valueYField: field, 
+      valueXField: "date",
+      tooltip: am5.Tooltip.new(root, {})
+    }) 
+  );
+  
+  series.get("tooltip").label.set("text", "[bold]{name}[/]\n{valueX.formatDate()}: {valueY}");
+  series.data.setAll(data);
+}
+
+createSeries("Series #1", "value");
+createSeries("Series #2", "value2");
+
+//Add cursor
+chart.set("cursor", am5xy.XYCursor.new(root, {
+  behavior: "zoomXY",
+  xAxis: xAxis
+}));
+
+</script>
+
+</body>
+</html>
