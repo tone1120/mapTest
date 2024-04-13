@@ -80,7 +80,7 @@
 
 
       /*
-      	지도 상에서 마커를 표시 
+        지도 상에서 마커를 표시 
       */
       ports.forEach((port, index) => {
         var lat = port[1]; // 위도 : 1증가 위로 이동, 1 하락 시 아래로 이동
@@ -100,7 +100,7 @@
         });
 
         /* 
-        	마커 클릭시 이벤트
+          마커 클릭시 이벤트
         */
         function markerClickEvent() {
           map.setZoom(7);
@@ -121,8 +121,8 @@
         marker.addListener("click", markerClickEvent);
 
         /* 
-    		항구 검색 시 이벤트
-    	*/
+        항구 검색 시 이벤트
+      */
         function SearchEvent(searchPortName) {
           map.setZoom(7);
           map.setCenter(click_focus_map);
@@ -135,20 +135,20 @@
           document.querySelector('#portLat').textContent = port[1];
           document.querySelector('#portLng').textContent = port[2];
         };
-        
-        
+
+
 
         // 검색 이벤트
         let searchPort;
-        
+
         searchBtn.addEventListener('click', handleSearch);
 
         function handleSearch() {
           searchPort = input.value;
-          if (searchPort.trim().toUpperCase() == port[3]) {SearchEvent(port[3])} // 항구 코드 검색
-          else if(searchPort.trim() == port[0]) {SearchEvent(port[3])} // 항구명(한글) 검색
+          if (searchPort.trim().toUpperCase() == port[3]) { SearchEvent(port[3]) } // 항구 코드 검색
+          else if (searchPort.trim() == port[0]) { SearchEvent(port[3]) } // 항구명(한글) 검색
           //else alert("올바른 항구명을 입력해주세요"); // 반복문 안에 있어서 메시지가 7번 나옴
-        } 
+        }
 
 
       });
@@ -260,6 +260,10 @@
       </div>
 
       <div id="popup2" class="popup">
+        <div id="chartdiv"></div>
+      </div>
+
+      <div id="popup3" class="popup">
         <div id="chartdiv"></div>
       </div>
     </div>
