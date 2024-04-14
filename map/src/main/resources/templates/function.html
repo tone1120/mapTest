@@ -5,114 +5,7 @@
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
 	<script th:src="@{/script/jquery-3.7.1.min.js}"></script>
-	<script>
-		$(function () {
-			$('#searchBtn').on('click', function () {
-				let searchPort = $('#searchPort').val();
-
-				// 현재 시간을 구하고 ISO 형식으로 변환
-				let now = new Date();
-				// 년, 월, 일, 시간, 분, 초 추출
-				let year = now.getFullYear();
-				let month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
-				let day = String(now.getDate()).padStart(2, '0');
-				let hours = String(now.getHours()).padStart(2, '0');
-				let minutes = String(now.getMinutes()).padStart(2, '0');
-				let seconds = String(now.getSeconds()).padStart(2, '0');
-
-				// "YYYY-MM-DD HH:MM:SS" 형식의 문자열 생성
-				let clickTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-
-				let sendData = { "searchPort": searchPort, "clickTime": clickTime }
-				
-				console.info("확인 항구: " + searchPort);
-				console.info("확인 시간: " + clickTime);
-	
-				$.ajax({
-					url: "/study/fun/waiting",
-					method: "GET",
-					data: sendData,
-					success: function (resp) {
-						let shipList = {}; // 선박타입: 선박 대수 순으로 딕셔너리 저장
-						let typeList = []; // 선박 타입이 들어감
-						let sendHtml = ""; // 테이블로 들어감
-						
-
-						
-						for (let i = 0; i < resp.length; i++) {
-
-							let shipType = resp[i].shipType;
-
-							if (!shipList[shipType]) {
-								shipList[shipType] = 0;
-								typeList.push(shipType);
-							}
-
-							// shipList의 shipType 수량 증가
-							shipList[shipType]++;
-
-						}
-						
-
-						for (let j = 0; j < typeList.length; j++) { // 선박 종류 별로 테이블 만들기
-							let waitingShipType = typeList[j]; 
-							let waitingShipCnt = shipList[waitingShipType];
-
-							sendHtml += `<tr><td>${waitingShipType}</td><td>${waitingShipCnt}</td></tr>`
-						}
-						sendHtml += `<tr><td>Total</td><td>${resp.length}</td></tr>` // 전체 선박 대수 추가
-
-						$('#waiting').append(sendHtml);
-
-					}
-				}); // 대기선박 찾기 끝
-				
-				// 작업선박 찾기
-				$.ajax({
-					url: "/study/fun/working",
-					method: "GET",
-					data: sendData,
-					success: function (resp) {
-						let shipList = {}; // 선박타입: 선박 대수 순으로 딕셔너리 저장
-						let typeList = []; // 선박 타입이 들어감
-						let sendHtml = ""; // 테이블로 들어감
-
-						
-						for (let i = 0; i < resp.length; i++) {
-
-							let shipType = resp[i].shipType;
-
-							if (!shipList[shipType]) {
-								shipList[shipType] = 0;
-								typeList.push(shipType);
-							}
-
-							// shipList의 shipType 수량 증가
-							shipList[shipType]++;
-
-						}
-						
-
-						for (let j = 0; j < typeList.length; j++) { // 선박 종류 별로 테이블 만들기
-							let workingShipType = typeList[j]; 
-							let workingShipCnt = shipList[workingShipType];
-
-							sendHtml += `<tr><td>${workingShipType}</td><td>${workingShipCnt}</td></tr>`
-						}
-						sendHtml += `<tr><td>Total</td><td>${resp.length}</td></tr>` // 전체 선박 대수 추가
-
-						$('#working').append(sendHtml);
-
-					}
-				
-				}); // 작업 선박 찾기 끝
-				
-			});
-		})
-
-	</script>
-
+	<script th:src="@{/script/showMeTheVesselCount.js}"></script>
 </head>
 
 <body>
@@ -136,6 +29,8 @@
 		</tr>
 			<!-- 작업 선박 자료-->
 	</table>
+	
+	<p id="vesselMessage"></p>
 </body>
 
 </html>
